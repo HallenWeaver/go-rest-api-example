@@ -9,7 +9,10 @@ import (
 func main() {
 	router := gin.Default()
 	router.GET("/characters", handler.GetCharacters)
-	router.POST("/characters", handler.PostCharacters)
+	router.GET("/character/:id", handler.GetCharacter)
+	router.POST("/character", handler.PostCharacter)
+	router.PUT("/character", handler.PutCharacter)
+	router.DELETE("/character/:id", handler.DeleteCharacter)
 
 	router.Run("localhost:8080")
 }
