@@ -14,3 +14,14 @@ var baseCharacters = []model.Character{
 func GetCharacters(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, baseCharacters)
 }
+
+func PostCharacters(c *gin.Context) {
+	var newCharacter model.Character
+
+	if err := c.BindJSON(&newCharacter); err != nil {
+		return
+	}
+
+	baseCharacters = append(baseCharacters, newCharacter)
+	c.IndentedJSON(http.StatusCreated, newCharacter)
+}
