@@ -1,7 +1,8 @@
 package model
 
 type Character struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	Age  int    `json:"age"`
+	Id      string `json:"id"`
+	OwnerId string `json:"ownerId"`
+	Name    string `json:"name"`
+	Age     int    `json:"age"`
 }

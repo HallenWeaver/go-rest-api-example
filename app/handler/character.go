@@ -10,7 +10,7 @@ import (
 )
 
 var baseCharacters = []model.Character{
-	{ID: "0760b871-55d4-4316-a7b9-767581bc73bf", Name: "Hallen Weaver", Age: 19},
+	{Id: "0760b871-55d4-4316-a7b9-767581bc73bf", OwnerId: "7f485de9-7af0-4c93-8ba9-d6562984ad80", Name: "Hallen Weaver", Age: 19},
 }
 
 func GetCharacters(c *gin.Context) {
@@ -20,7 +20,7 @@ func GetCharacters(c *gin.Context) {
 func GetCharacter(c *gin.Context) {
 	characterId := c.Param("id")
 	for _, character := range baseCharacters {
-		if character.ID == characterId {
+		if character.Id == characterId {
 			c.IndentedJSON(http.StatusOK, character)
 			return
 		}
@@ -47,7 +47,7 @@ func PutCharacter(c *gin.Context) {
 	}
 
 	for index, character := range baseCharacters {
-		if character.ID == editCharacter.ID {
+		if character.Id == editCharacter.Id {
 			baseCharacters[index] = editCharacter
 			c.IndentedJSON(http.StatusCreated, editCharacter)
 			return
@@ -59,7 +59,7 @@ func PutCharacter(c *gin.Context) {
 func DeleteCharacter(c *gin.Context) {
 	characterId := c.Param("id")
 	for index, character := range baseCharacters {
-		if character.ID == characterId {
+		if character.Id == characterId {
 			baseCharacters = append(baseCharacters[:index], baseCharacters[index+1:]...)
 			return
 		}
