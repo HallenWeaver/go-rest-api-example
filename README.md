@@ -1,7 +1,7 @@
 # Go REST API Example
 
 Golang project which implements a simple API that performs basic CRUD operations on a database, which models data for fictional characters.
-Currently using the Gin framework and the go-sqlite library
+Current implementation uses the Gin framework and the go-sqlite library.
 
 ## Installation
 
