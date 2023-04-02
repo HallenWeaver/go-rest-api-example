@@ -1,18 +1,19 @@
 package main
 
 import (
-	"alexandre/gorest/app/handler"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
 
-func main() {
-	router := gin.Default()
-	router.GET("/characters", handler.GetCharacters)
-	router.GET("/character/:id", handler.GetCharacter)
-	router.POST("/character", handler.PostCharacter)
-	router.PUT("/character", handler.PutCharacter)
-	router.DELETE("/character/:id", handler.DeleteCharacter)
+var PORT = "8080"
 
-	router.Run("localhost:8080")
+func main() {
+	// Map routes
+	router := gin.Default()
+	initializeRoutes(router)
+
+	fmt.Printf("Starting server on port %s\n", PORT)
+
+	router.Run(fmt.Sprintf("localhost:%s", PORT))
 }
