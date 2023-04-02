@@ -22,7 +22,7 @@ Current implementation uses the Gin framework and the go-sqlite library.
 
 ## Future Plans 
 
-* Create integration with an remote PostgreSQL database
+* Create integration with a remote PostgreSQL database
 * Add login and token validation (Any given user can only access their characters)
 * Deploy API 
 * Add rate limiting capabilities
