@@ -2,18 +2,37 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+
+	"alexandre/gorest/app/controller"
+	character_repository "alexandre/gorest/app/repository"
+	character_service "alexandre/gorest/app/service"
+
+	routing "alexandre/gorest/app/router"
 
 	"github.com/gin-gonic/gin"
 )
 
-var PORT = "8080"
+const defaultPort = "8080"
 
 func main() {
-	// Map routes
+	// Set up router and initialize routes
 	router := gin.Default()
-	initializeRoutes(router)
+	characterRepository, _ := character_repository.NewCharacterRepository()
+	characterService := character_service.NewCharacterService(*characterRepository)
+	characterHandler := controller.NewCharacterHandler(*characterService)
+	routing.InitializeRoutes(router, characterHandler)
 
-	fmt.Printf("Starting server on port %s\n", PORT)
+	// Get port from environment variable or use default
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = defaultPort
+	}
 
-	router.Run(fmt.Sprintf("localhost:%s", PORT))
+	// Start server
+	log.Printf("Starting server on port %s\n", port)
+	if err := router.Run(fmt.Sprintf(":%s", port)); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }
