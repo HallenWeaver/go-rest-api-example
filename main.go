@@ -5,13 +5,14 @@ import (
 	"log"
 	"os"
 
-	"alexandre/gorest/app/controller"
+	"alexandre/gorest/app/handler"
 	character_repository "alexandre/gorest/app/repository"
 	character_service "alexandre/gorest/app/service"
 
 	routing "alexandre/gorest/app/router"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 const defaultPort = "8080"
@@ -21,7 +22,7 @@ func main() {
 	router := gin.Default()
 	characterRepository, _ := character_repository.NewCharacterRepository()
 	characterService := character_service.NewCharacterService(*characterRepository)
-	characterHandler := controller.NewCharacterHandler(*characterService)
+	characterHandler := handler.NewCharacterHandler(*characterService)
 	routing.InitializeRoutes(router, characterHandler)
 
 	// Get port from environment variable or use default
