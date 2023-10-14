@@ -3,6 +3,9 @@ package character_service
 import (
 	"alexandre/gorest/app/model"
 	character_repository "alexandre/gorest/app/repository"
+	"context"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type CharacterService struct {
@@ -15,22 +18,22 @@ func NewCharacterService(characterRepository character_repository.CharacterRepos
 	}
 }
 
-func (s *CharacterService) GetCharacters(ownerId string, limit int) ([]*model.Character, error) {
-	return s.CharacterRepository.FindAllByUser(ownerId, limit)
+func (s *CharacterService) GetCharacters(ctx context.Context, ownerId string, limit int64) ([]*model.Character, error) {
+	return s.CharacterRepository.FindAllByUser(ctx, ownerId, limit)
 }
 
-func (s *CharacterService) GetCharacter(ownerId string, characterId string) (*model.Character, error) {
-	return s.CharacterRepository.FindByCharacterId(ownerId, characterId)
+func (s *CharacterService) GetCharacter(ctx context.Context, ownerId string, characterId primitive.ObjectID) (*model.Character, error) {
+	return s.CharacterRepository.FindByCharacterId(ctx, ownerId, characterId)
 }
 
-func (s *CharacterService) CreateCharacter(newCharacter model.Character) (bool, error) {
-	return s.CharacterRepository.CreateCharacter(newCharacter)
+func (s *CharacterService) CreateCharacter(ctx context.Context, newCharacter model.Character) (bool, error) {
+	return s.CharacterRepository.CreateCharacter(ctx, newCharacter)
 }
 
-func (s *CharacterService) UpdateCharacter(newCharacter model.Character) (bool, error) {
-	return s.CharacterRepository.UpdateCharacter(newCharacter)
+func (s *CharacterService) UpdateCharacter(ctx context.Context, newCharacter model.Character) (bool, error) {
+	return s.CharacterRepository.UpdateCharacter(ctx, newCharacter)
 }
 
-func (s *CharacterService) DeleteCharacter(ownerId string, characterId string) (bool, error) {
-	return s.CharacterRepository.DeleteCharacter(ownerId, characterId)
+func (s *CharacterService) DeleteCharacter(ctx context.Context, ownerId string, characterId primitive.ObjectID) (bool, error) {
+	return s.CharacterRepository.DeleteCharacter(ctx, ownerId, characterId)
 }

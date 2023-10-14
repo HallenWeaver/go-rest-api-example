@@ -1,8 +1,10 @@
 package model
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type Character struct {
-	Id      string `json:"id"`
-	OwnerId string `json:"owner_id"`
-	Name    string `json:"name"`
-	Age     int    `json:"age"`
+	ID      primitive.ObjectID `bson:_id,omitempty`
+	OwnerId string             `bson:"owner_id"`
+	Name    string             `bson:"name"`
+	Age     int                `bson:"age"`
 }
