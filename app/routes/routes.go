@@ -10,7 +10,7 @@ import (
 )
 
 func InitializeRoutes(router *gin.Engine, mongoClient *mongo.Client) {
-	characterRepository, _ := character_repository.NewCharacterRepository(mongoClient)
+	characterRepository := character_repository.NewCharacterRepository(mongoClient)
 	characterService := character_service.NewCharacterService(*characterRepository)
 	characterHandler := handler.NewCharacterHandler(*characterService)
 	initializeCharacterRoutes(router, characterHandler)

@@ -54,8 +54,6 @@ func (h *CharacterHandler) CreateCharacter(c *gin.Context) {
 	if err := c.BindJSON(&newCharacter); err != nil {
 		return
 	}
-	fmt.Printf("%+v\n", newCharacter)
-	newCharacter.ID = primitive.NewObjectID()
 
 	success, err := h.CharacterService.CreateCharacter(c, newCharacter)
 
