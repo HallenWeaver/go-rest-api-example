@@ -17,6 +17,9 @@ This should initialize an instance of the application running on the 8080 port o
 
 ## Version History
 
+### Version 0.4.1
+* Added first version of an Insomnia Collection with all current endpoints for quick testing.
+
 ### Version 0.4.0
 * Switched SQLite solution for a containerized MongoDB instance running on Docker.
     * This should be updated in the future to include a remote instance with proper logging in.
@@ -39,8 +42,7 @@ This should initialize an instance of the application running on the 8080 port o
 
 ## Future Plans 
 
-* Create integration with a remote PostgreSQL database;
+* Create integration with a remote MongoDB database;
 * Add login and token validation (Any given user can only access their characters);
 * Deploy API;
 * Add rate limiting capabilities;
-* Create Postman collection and add example requests;
