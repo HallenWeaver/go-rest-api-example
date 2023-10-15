@@ -2,7 +2,8 @@ package handler
 
 import (
 	"alexandre/gorest/app/model"
-	character_service "alexandre/gorest/app/service"
+	"alexandre/gorest/app/service"
+	"fmt"
 
 	"net/http"
 
@@ -11,10 +12,10 @@ import (
 )
 
 type CharacterHandler struct {
-	CharacterService character_service.CharacterService
+	CharacterService service.CharacterService
 }
 
-func NewCharacterHandler(characterService character_service.CharacterService) *CharacterHandler {
+func NewCharacterHandler(characterService service.CharacterService) *CharacterHandler {
 	return &CharacterHandler{
 		CharacterService: characterService,
 	}
@@ -53,6 +54,7 @@ func (h *CharacterHandler) CreateCharacter(c *gin.Context) {
 	if err := c.BindJSON(&newCharacter); err != nil {
 		return
 	}
+	fmt.Printf("%+v\n", newCharacter)
 	newCharacter.ID = primitive.NewObjectID()
 
 	success, err := h.CharacterService.CreateCharacter(c, newCharacter)
@@ -77,6 +79,8 @@ func (h *CharacterHandler) UpdateCharacter(c *gin.Context) {
 	if err != nil {
 		return
 	}
+
+	fmt.Printf("Edit Character ID: %+v\n", characterId)
 
 	editCharacter.ID = characterId
 

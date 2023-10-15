@@ -1,8 +1,9 @@
-package character_repository
+package repository
 
 import (
 	"alexandre/gorest/app/model"
 	"context"
+	"fmt"
 	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -17,7 +18,7 @@ type CharacterRepository struct {
 
 func NewCharacterRepository(client *mongo.Client) (*CharacterRepository, error) {
 	characterRepoDatabase := client.Database("charDB")
-	characterCollection := characterRepoDatabase.Collection("songs")
+	characterCollection := characterRepoDatabase.Collection("characters")
 	return &CharacterRepository{characterCollection: characterCollection}, nil
 }
 
@@ -26,7 +27,7 @@ func (r *CharacterRepository) FindAllByUser(ctx context.Context, ownerID string,
 	//Set the limit of the number of record to find
 	findOptions := options.Find()
 	findOptions.SetLimit(count)
-	cursor, err := r.characterCollection.Find(ctx, bson.D{{Key: "owner_id", Value: ownerID}}, findOptions)
+	cursor, err := r.characterCollection.Find(ctx, bson.D{{Key: "ownerid", Value: ownerID}}, findOptions)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -73,9 +74,10 @@ func (r *CharacterRepository) CreateCharacter(ctx context.Context, newCharacter 
 }
 
 func (r *CharacterRepository) UpdateCharacter(ctx context.Context, newCharacter model.Character) (bool, error) {
-	_, err := r.characterCollection.UpdateOne(ctx, bson.D{{Key: "_id", Value: &newCharacter.ID}}, newCharacter)
+	_, err := r.characterCollection.UpdateOne(ctx, bson.D{{Key: "_id", Value: &newCharacter.ID}}, bson.M{"$set": newCharacter})
 
 	if err != nil {
+		fmt.Printf("Error: %+v\n", err)
 		return false, err
 	}
 
@@ -83,7 +85,7 @@ func (r *CharacterRepository) UpdateCharacter(ctx context.Context, newCharacter 
 }
 
 func (r *CharacterRepository) DeleteCharacter(ctx context.Context, ownerId string, characterId primitive.ObjectID) (bool, error) {
-	_, err := r.characterCollection.DeleteOne(ctx, bson.D{{Key: "owner_id", Value: ownerId}, {Key: "_id", Value: characterId}})
+	_, err := r.characterCollection.DeleteOne(ctx, bson.D{{Key: "ownerid", Value: ownerId}, {Key: "_id", Value: characterId}})
 
 	if err != nil {
 		return false, err

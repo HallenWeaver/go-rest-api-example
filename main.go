@@ -1,10 +1,7 @@
 package main
 
 import (
-	"alexandre/gorest/app/handler"
-	character_repository "alexandre/gorest/app/repository"
-	routing "alexandre/gorest/app/router"
-	character_service "alexandre/gorest/app/service"
+	"alexandre/gorest/app/routes"
 	"context"
 	"fmt"
 	"log"
@@ -12,7 +9,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	_ "github.com/mattn/go-sqlite3"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -22,7 +18,7 @@ func main() {
 	// Initializing MongoDB connection
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 
-	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://mongodb"))
+	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGODB_URI")))
 
 	defer func() {
 		cancel()
@@ -43,14 +39,11 @@ func main() {
 	}
 	fmt.Println("Ping Success")
 
-	// Initializing Databases
+	// Initializing Routes
 	router := gin.Default()
-	characterRepository, _ := character_repository.NewCharacterRepository(mongoClient)
-	characterService := character_service.NewCharacterService(*characterRepository)
-	characterHandler := handler.NewCharacterHandler(*characterService)
-	routing.InitializeRoutes(router, characterHandler)
+	routes.InitializeRoutes(router, mongoClient)
 
-	// Startup Finishing
+	// Finishing Startup Configuration
 	defaultPort := "8080"
 	port := os.Getenv("PORT")
 	if port == "" {

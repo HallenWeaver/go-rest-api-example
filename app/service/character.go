@@ -1,18 +1,18 @@
-package character_service
+package service
 
 import (
 	"alexandre/gorest/app/model"
-	character_repository "alexandre/gorest/app/repository"
+	"alexandre/gorest/app/repository"
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type CharacterService struct {
-	CharacterRepository character_repository.CharacterRepository
+	CharacterRepository repository.CharacterRepository
 }
 
-func NewCharacterService(characterRepository character_repository.CharacterRepository) *CharacterService {
+func NewCharacterService(characterRepository repository.CharacterRepository) *CharacterService {
 	return &CharacterService{
 		CharacterRepository: characterRepository,
 	}
