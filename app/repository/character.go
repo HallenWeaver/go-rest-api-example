@@ -1,76 +1,70 @@
-package character_repository
+package repository
 
 import (
-	"alexandre/gorest/app/database"
 	"alexandre/gorest/app/model"
-	"database/sql"
+	"context"
 	"fmt"
+	"log"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type CharacterRepository struct {
-	db *sql.DB
+	characterCollection *mongo.Collection
 }
 
-func NewCharacterRepository() (*CharacterRepository, error) {
-	db, err := database.ConnectDatabase("sqlite3", "./characters.db")
-	if err != nil {
-		return nil, err
-	}
-
-	tableQuery := "CREATE TABLE IF NOT EXISTS characters (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL, name VARCHAR(250) NOT NULL, age INTEGER)"
-	err = database.PrepareAndCreateTable(db, tableQuery)
-	if err != nil {
-		return nil, err
-	}
-
-	return &CharacterRepository{db: db}, nil
+func NewCharacterRepository(client *mongo.Client) (*CharacterRepository, error) {
+	characterRepoDatabase := client.Database("charDB")
+	characterCollection := characterRepoDatabase.Collection("characters")
+	return &CharacterRepository{characterCollection: characterCollection}, nil
 }
 
-func (r *CharacterRepository) FindAllByUser(ownerID string, count int) ([]*model.Character, error) {
-	findQuery := fmt.Sprintf("SELECT id, owner_id, name, age FROM characters WHERE owner_id='%s' LIMIT %d", ownerID, count)
-	rows, err := r.db.Query(findQuery)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
+func (r *CharacterRepository) FindAllByUser(ctx context.Context, ownerID string, count int64) ([]*model.Character, error) {
 	characters := make([]*model.Character, 0)
-	for rows.Next() {
-		character := &model.Character{}
-		err = rows.Scan(&character.Id, &character.OwnerId, &character.Name, &character.Age)
-		if err != nil {
-			return nil, err
-		}
-		characters = append(characters, character)
+	//Set the limit of the number of record to find
+	findOptions := options.Find()
+	findOptions.SetLimit(count)
+	cursor, err := r.characterCollection.Find(ctx, bson.D{{Key: "ownerid", Value: ownerID}}, findOptions)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	err = rows.Err()
-	if err != nil {
-		return nil, err
+	for cursor.Next(ctx) {
+		//Create a value into which the single document can be decoded
+		var character *model.Character
+		err := cursor.Decode(&character)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		characters = append(characters, character)
+
 	}
+
+	if err := cursor.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	//Close the cursor once finished
+	cursor.Close(ctx)
 
 	return characters, nil
 }
 
-func (r *CharacterRepository) FindByCharacterId(ownerId string, characterId string) (*model.Character, error) {
-	findQuery := fmt.Sprintf("SELECT id, owner_id, name, age FROM characters WHERE owner_id='%s' AND id='%s' LIMIT 1", ownerId, characterId)
-	row := r.db.QueryRow(findQuery)
-
+func (r *CharacterRepository) FindByCharacterId(ctx context.Context, ownerId string, characterId primitive.ObjectID) (*model.Character, error) {
 	character := &model.Character{}
-	sqlErr := row.Scan(&character.Id, &character.OwnerId, &character.Name, &character.Age)
-
-	if sqlErr != nil {
-		if sqlErr == sql.ErrNoRows {
-			return &model.Character{}, nil
-		}
-		return &model.Character{}, sqlErr
+	err := r.characterCollection.FindOne(ctx, model.Character{ID: characterId, OwnerId: ownerId}).Decode(&character)
+	if err != nil {
+		return &model.Character{}, err
 	}
 	return character, nil
 }
 
-func (r *CharacterRepository) CreateCharacter(newCharacter model.Character) (bool, error) {
-	insertQuery := "INSERT INTO characters(id, owner_id, name, age) VALUES($1, $2, $3, $4) RETURNING id"
-	err := r.db.QueryRow(insertQuery, newCharacter.Id, newCharacter.OwnerId, newCharacter.Name, newCharacter.Age).Scan(&newCharacter.Id)
+func (r *CharacterRepository) CreateCharacter(ctx context.Context, newCharacter model.Character) (bool, error) {
+	_, err := r.characterCollection.InsertOne(ctx, newCharacter)
 
 	if err != nil {
 		return false, err
@@ -79,22 +73,19 @@ func (r *CharacterRepository) CreateCharacter(newCharacter model.Character) (boo
 	return true, nil
 }
 
-func (r *CharacterRepository) UpdateCharacter(newCharacter model.Character) (bool, error) {
-	updateQuery := "UPDATE characters SET owner_id = $1, name = $2, age = $3 WHERE id = $4 AND owner_id = $5"
-	err := r.db.
-		QueryRow(updateQuery, newCharacter.Id, newCharacter.OwnerId, newCharacter.Name, newCharacter.Age, newCharacter.OwnerId).
-		Scan(&newCharacter.Id)
+func (r *CharacterRepository) UpdateCharacter(ctx context.Context, newCharacter model.Character) (bool, error) {
+	_, err := r.characterCollection.UpdateOne(ctx, bson.D{{Key: "_id", Value: &newCharacter.ID}}, bson.M{"$set": newCharacter})
 
 	if err != nil {
+		fmt.Printf("Error: %+v\n", err)
 		return false, err
 	}
 
 	return true, nil
 }
 
-func (r *CharacterRepository) DeleteCharacter(ownerId string, characterId string) (bool, error) {
-	deleteQuery := "DELETE from characters where owner_id = $1 AND id = $2"
-	_, err := r.db.Exec(deleteQuery, ownerId, characterId)
+func (r *CharacterRepository) DeleteCharacter(ctx context.Context, ownerId string, characterId primitive.ObjectID) (bool, error) {
+	_, err := r.characterCollection.DeleteOne(ctx, bson.D{{Key: "ownerid", Value: ownerId}, {Key: "_id", Value: characterId}})
 
 	if err != nil {
 		return false, err

@@ -1,31 +1,50 @@
 package main
 
 import (
+	"alexandre/gorest/app/routes"
+	"context"
 	"fmt"
 	"log"
 	"os"
-
-	"alexandre/gorest/app/handler"
-	character_repository "alexandre/gorest/app/repository"
-	character_service "alexandre/gorest/app/service"
-
-	routing "alexandre/gorest/app/router"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	_ "github.com/mattn/go-sqlite3"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-const defaultPort = "8080"
-
 func main() {
-	// Set up router and initialize routes
-	router := gin.Default()
-	characterRepository, _ := character_repository.NewCharacterRepository()
-	characterService := character_service.NewCharacterService(*characterRepository)
-	characterHandler := handler.NewCharacterHandler(*characterService)
-	routing.InitializeRoutes(router, characterHandler)
+	// Initializing MongoDB connection
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 
-	// Get port from environment variable or use default
+	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGODB_URI")))
+
+	defer func() {
+		cancel()
+		if err := mongoClient.Disconnect(ctx); err != nil {
+			log.Fatalf("MongoDB disconnect error : %v", err)
+		}
+	}()
+
+	if err != nil {
+		log.Fatalf("Connection Error :%v", err)
+		return
+	}
+
+	err = mongoClient.Ping(ctx, readpref.Primary())
+	if err != nil {
+		log.Fatalf("Ping MongoDB Error :%v", err)
+		return
+	}
+	fmt.Println("Ping Success")
+
+	// Initializing Routes
+	router := gin.Default()
+	routes.InitializeRoutes(router, mongoClient)
+
+	// Finishing Startup Configuration
+	defaultPort := "8080"
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort

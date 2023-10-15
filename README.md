@@ -1,13 +1,27 @@
 # Go REST API Example
 
 Golang project which implements a simple API that performs basic CRUD operations on a database, which models data for fictional characters.
-Current implementation uses the Gin framework and the go-sqlite library.
+Current implementation uses the Gin framework and the mongo driver libraries.
 
 ## Installation
 
-(Under construction)
+Make sure you have docker installed on your machine!
+
+Run the following command on the application's root folder:
+
+``` bash
+docker compose up -d
+```
+
+This should initialize an instance of the application running on the 8080 port of your machine. Also, a mongo express endpoint is available at the 8081 port for quick and easy access to the databases via your browser.
 
 ## Version History
+
+### Version 0.4.0
+* Switched SQLite solution for a containerized MongoDB instance running on Docker.
+    * This should be updated in the future to include a remote instance with proper logging in.
+* Dockerized the actual application itself
+* Added a mongo-express endpoint to visualize the database, eliminating the need for solutions such as Compass if one desires so.
 
 ### Version 0.3.0
 * Implemented a simple version of the Controller/Service/Repository pattern, in order to comply with _Separation of Concerns_;
