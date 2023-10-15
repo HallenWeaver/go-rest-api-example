@@ -1,0 +1,242 @@
+{
+    "_type": "export",
+    "__export_format": 4,
+    "__export_date": "2023-10-15T17:55:47.774Z",
+    "__export_source": "insomnia.desktop.app:v2023.5.7",
+    "resources": [
+        {
+            "_id": "req_e51486e2aaff405084194355390e636f",
+            "parentId": "wrk_27e00b99b60d4ab19158b0c9ddd84ca9",
+            "modified": 1697334681450,
+            "created": 1697252415607,
+            "url": "http://{{ _.host }}:{{ _.port }}/health",
+            "name": "Health Check",
+            "description": "",
+            "method": "GET",
+            "body": {},
+            "parameters": [],
+            "headers": [
+                {
+                    "name": "User-Agent",
+                    "value": "Insomnia/2023.5.7"
+                }
+            ],
+            "authentication": {},
+            "metaSortKey": -1697334677640,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "wrk_27e00b99b60d4ab19158b0c9ddd84ca9",
+            "parentId": null,
+            "modified": 1697252371241,
+            "created": 1697252371241,
+            "name": "Go Example API",
+            "description": "",
+            "scope": "collection",
+            "_type": "workspace"
+        },
+        {
+            "_id": "req_094b46bafc8648adabd6cd6708cc4eb7",
+            "parentId": "fld_4c3c22c494b24ed6a074ecdb67dc1306",
+            "modified": 1697335282236,
+            "created": 1697334684900,
+            "url": "http://{{ _.host }}:{{ _.port }}/character",
+            "name": "Create Character",
+            "description": "",
+            "method": "POST",
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\"ownerid\": \"ABC123\",\n\t\"name\": \"Hallen Weaver\",\n\t\"age\": 20\n}"
+            },
+            "parameters": [],
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "User-Agent",
+                    "value": "Insomnia/2023.5.7"
+                }
+            ],
+            "authentication": {},
+            "metaSortKey": -1697334684900,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "fld_4c3c22c494b24ed6a074ecdb67dc1306",
+            "parentId": "wrk_27e00b99b60d4ab19158b0c9ddd84ca9",
+            "modified": 1697334677540,
+            "created": 1697334677540,
+            "name": "Character Creation",
+            "description": "",
+            "environment": {},
+            "environmentPropertyOrder": null,
+            "metaSortKey": -1697334677540,
+            "_type": "request_group"
+        },
+        {
+            "_id": "req_32ba40d865d84225bbbf75b4bb52a332",
+            "parentId": "fld_4c3c22c494b24ed6a074ecdb67dc1306",
+            "modified": 1697335772845,
+            "created": 1697335690063,
+            "url": "http://{{ _.host }}:{{ _.port }}/character/ABC123/652b4842a41455955fe991fa",
+            "name": "Edit Character",
+            "description": "",
+            "method": "PUT",
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\"ownerid\": \"ABC123\",\n\t\"name\": \"Hallen Weaver\",\n\t\"age\": 21\n}"
+            },
+            "parameters": [],
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "name": "User-Agent",
+                    "value": "Insomnia/2023.5.7"
+                }
+            ],
+            "authentication": {},
+            "metaSortKey": -1697334684850,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "req_b38ae52504784bbcb935b0ca9d156415",
+            "parentId": "fld_4c3c22c494b24ed6a074ecdb67dc1306",
+            "modified": 1697336128680,
+            "created": 1697336114033,
+            "url": "http://{{ _.host }}:{{ _.port }}/character/ABC123/652b4842a41455955fe991fa",
+            "name": "Delete Character",
+            "description": "",
+            "method": "DELETE",
+            "body": {},
+            "parameters": [],
+            "headers": [
+                {
+                    "name": "User-Agent",
+                    "value": "Insomnia/2023.5.7"
+                }
+            ],
+            "authentication": {},
+            "metaSortKey": -1697334684825,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "req_02fcdb1336524dc48e0deb8c6d423440",
+            "parentId": "fld_4c3c22c494b24ed6a074ecdb67dc1306",
+            "modified": 1697335617660,
+            "created": 1697335550120,
+            "url": "http://{{ _.host }}:{{ _.port }}/character/ABC123/652b4842a41455955fe991fa",
+            "name": "Get Character",
+            "description": "",
+            "method": "GET",
+            "body": {},
+            "parameters": [],
+            "headers": [
+                {
+                    "name": "User-Agent",
+                    "value": "Insomnia/2023.5.7"
+                }
+            ],
+            "authentication": {},
+            "metaSortKey": -1697334684800,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "req_c12c68528b324092aabb162f3436008f",
+            "parentId": "fld_4c3c22c494b24ed6a074ecdb67dc1306",
+            "modified": 1697335632187,
+            "created": 1697335629502,
+            "url": "http://{{ _.host }}:{{ _.port }}/character/ABC123",
+            "name": "Get Characters",
+            "description": "",
+            "method": "GET",
+            "body": {},
+            "parameters": [],
+            "headers": [
+                {
+                    "name": "User-Agent",
+                    "value": "Insomnia/2023.5.7"
+                }
+            ],
+            "authentication": {},
+            "metaSortKey": -1697334681220,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
+            "_id": "env_4c2baaa436def2e5c70c234352670951538a6dcd",
+            "parentId": "wrk_27e00b99b60d4ab19158b0c9ddd84ca9",
+            "modified": 1697252411368,
+            "created": 1697252371245,
+            "name": "Base Environment",
+            "data": {
+                "host": "localhost",
+                "port": 8080
+            },
+            "dataPropertyOrder": {
+                "&": [
+                    "host",
+                    "port"
+                ]
+            },
+            "color": null,
+            "isPrivate": false,
+            "metaSortKey": 1697252371245,
+            "_type": "environment"
+        },
+        {
+            "_id": "jar_4c2baaa436def2e5c70c234352670951538a6dcd",
+            "parentId": "wrk_27e00b99b60d4ab19158b0c9ddd84ca9",
+            "modified": 1697252371246,
+            "created": 1697252371246,
+            "name": "Default Jar",
+            "cookies": [],
+            "_type": "cookie_jar"
+        }
+    ]
+}
