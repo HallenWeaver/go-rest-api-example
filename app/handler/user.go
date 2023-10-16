@@ -22,14 +22,15 @@ func (h *UserHandler) CreateStandardUser(c *gin.Context) {
 	var newUser model.User
 
 	if err := c.BindJSON(&newUser); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
-	success, err := h.UserService.CreateUser(c, newUser, model.Standard)
+	storedUser, err := h.UserService.CreateUser(c, newUser, model.Standard)
 
-	if success {
-		c.IndentedJSON(http.StatusCreated, newUser)
+	if storedUser != nil {
+		c.IndentedJSON(http.StatusCreated, storedUser)
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err})
 	}
 }

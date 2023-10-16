@@ -16,7 +16,7 @@ func NewUserService(userRepository repository.UserRepository) *UserService {
 	}
 }
 
-func (us *UserService) CreateUser(ctx context.Context, newUser model.User, role model.UserRole) (bool, error) {
+func (us *UserService) CreateUser(ctx context.Context, newUser model.User, role model.UserRole) (*model.User, error) {
 	return us.UserRepository.CreateUser(ctx, newUser, role)
 }
 
