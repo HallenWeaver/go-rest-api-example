@@ -15,6 +15,12 @@ docker compose up -d
 
 This should initialize an instance of the application running on the 8080 port of your machine. Also, a mongo express endpoint is available at the 8081 port for quick and easy access to the databases via your browser.
 
+**Note:** If making any updates to the code, make sure to stop the containers, kill the dangling ones and run the build command:
+
+``` bash
+docker compose down && docker image prune -y && docker compose build
+```
+
 ## Version History
 
 ### Version 0.4.1

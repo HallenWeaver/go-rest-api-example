@@ -60,7 +60,7 @@ func (h *CharacterHandler) CreateCharacter(c *gin.Context) {
 	if success {
 		c.IndentedJSON(http.StatusCreated, newCharacter)
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 }
 
@@ -86,7 +86,7 @@ func (h *CharacterHandler) UpdateCharacter(c *gin.Context) {
 	if success {
 		c.IndentedJSON(http.StatusCreated, editCharacter)
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 }
 
@@ -102,6 +102,6 @@ func (h *CharacterHandler) DeleteCharacter(c *gin.Context) {
 	if success {
 		c.IndentedJSON(http.StatusOK, gin.H{})
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 }

@@ -2,6 +2,7 @@ package routes
 
 import (
 	"alexandre/gorest/app/handler"
+	"alexandre/gorest/app/middleware"
 	"alexandre/gorest/app/repository"
 	"alexandre/gorest/app/service"
 
@@ -20,12 +21,15 @@ func InitializeRoutes(router *gin.Engine, mongoClient *mongo.Client) {
 	userHandler := handler.NewUserHandler(*userService)
 	initializeUserRoutes(router, userHandler)
 
+	authenticationHandler := handler.NewAuthenticationHandler(*userService)
+	initializeAuthenticationRoutes(router, authenticationHandler)
+
 	healthHandler := handler.NewHealthHandler()
 	initializeHealthRoutes(router, healthHandler)
 }
 
 func initializeCharacterRoutes(router *gin.Engine, characterHandler *handler.CharacterHandler) {
-	characterV1 := router.Group("/character")
+	characterV1 := router.Group("/character").Use(middleware.Auth())
 	characterV1.GET("/:ownerId", characterHandler.GetCharacters)
 	characterV1.GET("/:ownerId/:id", characterHandler.GetCharacter)
 	characterV1.POST("", characterHandler.CreateCharacter)
@@ -36,6 +40,11 @@ func initializeCharacterRoutes(router *gin.Engine, characterHandler *handler.Cha
 func initializeUserRoutes(router *gin.Engine, userHandler *handler.UserHandler) {
 	userV1 := router.Group("/user")
 	userV1.POST("", userHandler.CreateStandardUser)
+}
+
+func initializeAuthenticationRoutes(router *gin.Engine, authenticationHandler *handler.AuthenticationHandler) {
+	userV1 := router.Group("/authenticate")
+	userV1.POST("", authenticationHandler.LoginUser)
 }
 
 func initializeHealthRoutes(router *gin.Engine, healthHandler *handler.HealthHandler) {

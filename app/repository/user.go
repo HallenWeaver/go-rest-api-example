@@ -54,19 +54,19 @@ func (ur *UserRepository) CreateUser(ctx context.Context, newUser model.User, ro
 	return &newUser, nil
 }
 
-func (ur *UserRepository) LoginUser(ctx context.Context, loginUser model.User) (bool, error) {
+func (ur *UserRepository) LoginUser(ctx context.Context, loginUser model.TokenRequest) (*model.User, error) {
 	// Validate user upon logging in
 	user := &model.User{}
 	err := ur.userCollection.FindOne(ctx, model.User{Username: loginUser.Username}).Decode(&user)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginUser.Password))
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	return true, nil
+	return user, nil
 }
 
 // GenerateToken generates a jwt token

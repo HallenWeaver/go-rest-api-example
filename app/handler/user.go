@@ -22,7 +22,7 @@ func (h *UserHandler) CreateStandardUser(c *gin.Context) {
 	var newUser model.User
 
 	if err := c.BindJSON(&newUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -31,6 +31,6 @@ func (h *UserHandler) CreateStandardUser(c *gin.Context) {
 	if storedUser != nil {
 		c.IndentedJSON(http.StatusCreated, storedUser)
 	} else {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err})
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 	}
 }

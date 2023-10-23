@@ -20,6 +20,6 @@ func (us *UserService) CreateUser(ctx context.Context, newUser model.User, role 
 	return us.UserRepository.CreateUser(ctx, newUser, role)
 }
 
-func (us *UserService) LoginUser(ctx context.Context, loginUser model.User) (bool, error) {
+func (us *UserService) LoginUser(ctx context.Context, loginUser model.TokenRequest) (*model.User, error) {
 	return us.UserRepository.LoginUser(ctx, loginUser)
 }
