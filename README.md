@@ -52,3 +52,4 @@ docker compose down && docker image prune -y && docker compose build
 * Add login and token validation (Any given user can only access their characters);
 * Deploy API;
 * Add rate limiting capabilities;
+* Add uniqueness to user creation

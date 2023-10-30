@@ -28,9 +28,9 @@ func (h *UserHandler) CreateStandardUser(c *gin.Context) {
 
 	storedUser, err := h.UserService.CreateUser(c, newUser, model.Standard)
 
-	if storedUser != nil {
-		c.IndentedJSON(http.StatusCreated, storedUser)
-	} else {
+	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+	} else {
+		c.IndentedJSON(http.StatusCreated, storedUser)
 	}
 }

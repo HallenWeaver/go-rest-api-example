@@ -3,13 +3,12 @@ package repository
 import (
 	"alexandre/gorest/app/model"
 	"context"
-	"errors"
 	"net/mail"
-	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -22,6 +21,15 @@ type UserRepository struct {
 func NewUserRepository(client *mongo.Client) *UserRepository {
 	userRepoDatabase := client.Database("charDB")
 	userCollection := userRepoDatabase.Collection("users")
+	emailIndex := mongo.IndexModel{
+		Keys:    bson.D{{Key: "email", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	}
+	usernameIndex := mongo.IndexModel{
+		Keys:    bson.D{{Key: "username", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	}
+	userCollection.Indexes().CreateMany(context.Background(), []mongo.IndexModel{emailIndex, usernameIndex})
 	return &UserRepository{userCollection: userCollection}
 }
 
@@ -67,42 +75,4 @@ func (ur *UserRepository) LoginUser(ctx context.Context, loginUser model.TokenRe
 		return nil, err
 	}
 	return user, nil
-}
-
-// GenerateToken generates a jwt token
-// GenerateToken takes an email as an argument and returns a signed JWT token and an error
-func GenerateJWT(email string, username string) (tokenString string, err error) {
-	expirationTime := time.Now().Add(1 * time.Hour)
-	claims := &model.JWTClaim{
-		Email: email,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expirationTime.Unix(),
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err = token.SignedString(jwtKey)
-	return
-}
-
-func ValidateToken(signedToken string) (err error) {
-	token, err := jwt.ParseWithClaims(
-		signedToken,
-		&model.JWTClaim{},
-		func(token *jwt.Token) (interface{}, error) {
-			return []byte(jwtKey), nil
-		},
-	)
-	if err != nil {
-		return
-	}
-	claims, ok := token.Claims.(*model.JWTClaim)
-	if !ok {
-		err = errors.New("unable to parse JWT claims")
-		return
-	}
-	if claims.ExpiresAt < time.Now().Local().Unix() {
-		err = errors.New("token expired")
-		return
-	}
-	return
 }
