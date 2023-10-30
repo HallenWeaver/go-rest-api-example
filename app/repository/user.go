@@ -12,8 +12,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtKey = []byte("mysuperawesomekey")
-
 type UserRepository struct {
 	userCollection *mongo.Collection
 }

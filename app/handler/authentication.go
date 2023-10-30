@@ -38,7 +38,7 @@ func (h *AuthenticationHandler) LoginUser(c *gin.Context) {
 		return
 	}
 
-	tokenString, err := generateJWT(user.Email, user.Username)
+	tokenString, err := generateJWT(user.ID.String())
 	if err != nil {
 		errormsg := fmt.Sprintf("Unable to generate token for user; error: %+v", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": errormsg})
@@ -48,11 +48,10 @@ func (h *AuthenticationHandler) LoginUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
 
-func generateJWT(email string, username string) (tokenString string, err error) {
+func generateJWT(userID string) (tokenString string, err error) {
 	jwtKey := []byte(os.Getenv("JWT_TOKEN"))
 	claims := model.JWTTokenClaims{
-		Email:    email,
-		Username: username,
+		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			// A usual scenario is to set the expiration time relative to the current time
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),

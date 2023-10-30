@@ -5,12 +5,19 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func parseUserDataFromToken(signedToken string) (string, error) {
+func ParseUserDataFromToken(c *gin.Context) (string, error) {
+	signedToken, err := extractBearerToken(c.GetHeader("Authorization"))
+	if err != nil {
+		return "", err
+	}
+
 	token, err := jwt.Parse(signedToken, func(token *jwt.Token) (interface{}, error) {
 		// Validating Algorithm
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -35,5 +42,18 @@ func parseUserDataFromToken(signedToken string) (string, error) {
 		return "", err
 	}
 
-	return claims.Username, nil
+	return claims.UserID, nil
+}
+
+func extractBearerToken(header string) (string, error) {
+	if header == "" {
+		return "", errors.New("bad header value given")
+	}
+
+	jwtToken := strings.Split(header, " ")
+	if len(jwtToken) != 2 {
+		return "", errors.New("incorrectly formatted authorization header")
+	}
+
+	return jwtToken[1], nil
 }

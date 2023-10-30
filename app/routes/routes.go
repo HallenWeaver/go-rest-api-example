@@ -30,11 +30,11 @@ func InitializeRoutes(router *gin.Engine, mongoClient *mongo.Client) {
 
 func initializeCharacterRoutes(router *gin.Engine, characterHandler *handler.CharacterHandler) {
 	characterV1 := router.Group("/character").Use(middleware.Auth())
-	characterV1.GET("/:ownerId", characterHandler.GetCharacters)
-	characterV1.GET("/:ownerId/:id", characterHandler.GetCharacter)
+	characterV1.GET("/", characterHandler.GetCharacters)
+	characterV1.GET("/:id", characterHandler.GetCharacter)
 	characterV1.POST("", characterHandler.CreateCharacter)
-	characterV1.PUT("/:ownerId/:id", characterHandler.UpdateCharacter)
-	characterV1.DELETE("/:ownerId/:id", characterHandler.DeleteCharacter)
+	characterV1.PUT("/:id", characterHandler.UpdateCharacter)
+	characterV1.DELETE("/:id", characterHandler.DeleteCharacter)
 }
 
 func initializeUserRoutes(router *gin.Engine, userHandler *handler.UserHandler) {

@@ -8,7 +8,6 @@ type TokenRequest struct {
 }
 
 type JWTTokenClaims struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
+	UserID string `json:"userid"`
 	jwt.RegisteredClaims
 }
