@@ -16,18 +16,18 @@ type CharacterRepository struct {
 	characterCollection *mongo.Collection
 }
 
-func NewCharacterRepository(client *mongo.Client) (*CharacterRepository, error) {
+func NewCharacterRepository(client *mongo.Client) *CharacterRepository {
 	characterRepoDatabase := client.Database("charDB")
 	characterCollection := characterRepoDatabase.Collection("characters")
-	return &CharacterRepository{characterCollection: characterCollection}, nil
+	return &CharacterRepository{characterCollection: characterCollection}
 }
 
-func (r *CharacterRepository) FindAllByUser(ctx context.Context, ownerID string, count int64) ([]*model.Character, error) {
+func (cr *CharacterRepository) FindAllByUser(ctx context.Context, ownerID string, count int64) ([]*model.Character, error) {
 	characters := make([]*model.Character, 0)
 	//Set the limit of the number of record to find
 	findOptions := options.Find()
 	findOptions.SetLimit(count)
-	cursor, err := r.characterCollection.Find(ctx, bson.D{{Key: "ownerid", Value: ownerID}}, findOptions)
+	cursor, err := cr.characterCollection.Find(ctx, bson.D{{Key: "ownerid", Value: ownerID}}, findOptions)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,27 +54,28 @@ func (r *CharacterRepository) FindAllByUser(ctx context.Context, ownerID string,
 	return characters, nil
 }
 
-func (r *CharacterRepository) FindByCharacterId(ctx context.Context, ownerId string, characterId primitive.ObjectID) (*model.Character, error) {
+func (cr *CharacterRepository) FindByCharacterId(ctx context.Context, ownerId string, characterId primitive.ObjectID) (*model.Character, error) {
 	character := &model.Character{}
-	err := r.characterCollection.FindOne(ctx, model.Character{ID: characterId, OwnerId: ownerId}).Decode(&character)
+	err := cr.characterCollection.FindOne(ctx, model.Character{ID: characterId, OwnerId: ownerId}).Decode(&character)
 	if err != nil {
 		return &model.Character{}, err
 	}
 	return character, nil
 }
 
-func (r *CharacterRepository) CreateCharacter(ctx context.Context, newCharacter model.Character) (bool, error) {
-	_, err := r.characterCollection.InsertOne(ctx, newCharacter)
+func (cr *CharacterRepository) CreateCharacter(ctx context.Context, newCharacter model.Character) (*model.Character, error) {
+	newCharacter.ID = primitive.NewObjectID()
+	_, err := cr.characterCollection.InsertOne(ctx, newCharacter)
 
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	return true, nil
+	return &newCharacter, nil
 }
 
-func (r *CharacterRepository) UpdateCharacter(ctx context.Context, newCharacter model.Character) (bool, error) {
-	_, err := r.characterCollection.UpdateOne(ctx, bson.D{{Key: "_id", Value: &newCharacter.ID}}, bson.M{"$set": newCharacter})
+func (cr *CharacterRepository) UpdateCharacter(ctx context.Context, newCharacter model.Character) (bool, error) {
+	_, err := cr.characterCollection.UpdateOne(ctx, bson.D{{Key: "_id", Value: &newCharacter.ID}}, bson.M{"$set": newCharacter})
 
 	if err != nil {
 		fmt.Printf("Error: %+v\n", err)
@@ -84,8 +85,8 @@ func (r *CharacterRepository) UpdateCharacter(ctx context.Context, newCharacter 
 	return true, nil
 }
 
-func (r *CharacterRepository) DeleteCharacter(ctx context.Context, ownerId string, characterId primitive.ObjectID) (bool, error) {
-	_, err := r.characterCollection.DeleteOne(ctx, bson.D{{Key: "ownerid", Value: ownerId}, {Key: "_id", Value: characterId}})
+func (cr *CharacterRepository) DeleteCharacter(ctx context.Context, ownerId string, characterId primitive.ObjectID) (bool, error) {
+	_, err := cr.characterCollection.DeleteOne(ctx, bson.D{{Key: "ownerid", Value: ownerId}, {Key: "_id", Value: characterId}})
 
 	if err != nil {
 		return false, err

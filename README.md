@@ -15,7 +15,16 @@ docker compose up -d
 
 This should initialize an instance of the application running on the 8080 port of your machine. Also, a mongo express endpoint is available at the 8081 port for quick and easy access to the databases via your browser.
 
+**Note:** If making any updates to the code, make sure to stop the containers, kill the dangling ones and run the build command:
+
+``` bash
+docker compose down && docker image prune -y && docker compose build
+```
+
 ## Version History
+
+### Version 0.5.0
+* Added JWT Token based login capabilities and cleaned up some classes
 
 ### Version 0.4.1
 * Added first version of an Insomnia Collection with all current endpoints for quick testing.
@@ -43,6 +52,8 @@ This should initialize an instance of the application running on the 8080 port o
 ## Future Plans 
 
 * Create integration with a remote MongoDB database;
-* Add login and token validation (Any given user can only access their characters);
 * Deploy API;
 * Add rate limiting capabilities;
+* Implement proper interfaces on code;
+* Expand character model capabilities (e.g. add links to images)
+* Create CI/CD flow and add secret environment variables in production environment

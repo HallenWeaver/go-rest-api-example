@@ -3,7 +3,7 @@ package handler
 import (
 	"alexandre/gorest/app/model"
 	"alexandre/gorest/app/service"
-	"fmt"
+	"alexandre/gorest/app/util"
 
 	"net/http"
 
@@ -22,7 +22,12 @@ func NewCharacterHandler(characterService service.CharacterService) *CharacterHa
 }
 
 func (h *CharacterHandler) GetCharacters(c *gin.Context) {
-	ownerID := c.Param("ownerId")
+	ownerID, err := util.ParseUserDataFromToken(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	characters, err := h.CharacterService.GetCharacters(c, ownerID, 10)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -33,12 +38,18 @@ func (h *CharacterHandler) GetCharacters(c *gin.Context) {
 }
 
 func (h *CharacterHandler) GetCharacter(c *gin.Context) {
-	ownerID := c.Param("ownerId")
+	ownerID, err := util.ParseUserDataFromToken(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	characterId, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	character, err := h.CharacterService.GetCharacter(c, ownerID, characterId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -49,20 +60,26 @@ func (h *CharacterHandler) GetCharacter(c *gin.Context) {
 }
 
 func (h *CharacterHandler) CreateCharacter(c *gin.Context) {
+	ownerID, err := util.ParseUserDataFromToken(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	var newCharacter model.Character
 
 	if err := c.BindJSON(&newCharacter); err != nil {
 		return
 	}
-	fmt.Printf("%+v\n", newCharacter)
-	newCharacter.ID = primitive.NewObjectID()
 
-	success, err := h.CharacterService.CreateCharacter(c, newCharacter)
+	newCharacter.OwnerId = ownerID
 
-	if success {
-		c.IndentedJSON(http.StatusCreated, newCharacter)
+	savedCharacter, err := h.CharacterService.CreateCharacter(c, newCharacter)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.IndentedJSON(http.StatusCreated, savedCharacter)
 	}
 }
 
@@ -72,15 +89,19 @@ func (h *CharacterHandler) UpdateCharacter(c *gin.Context) {
 	if err := c.BindJSON(&editCharacter); err != nil {
 		return
 	}
-	editCharacter.OwnerId = c.Param("ownerId")
+
+	ownerID, err := util.ParseUserDataFromToken(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	editCharacter.OwnerId = ownerID
 
 	characterId, err := primitive.ObjectIDFromHex(c.Param("id"))
 
 	if err != nil {
 		return
 	}
-
-	fmt.Printf("Edit Character ID: %+v\n", characterId)
 
 	editCharacter.ID = characterId
 
@@ -88,22 +109,26 @@ func (h *CharacterHandler) UpdateCharacter(c *gin.Context) {
 	if success {
 		c.IndentedJSON(http.StatusCreated, editCharacter)
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 }
 
 func (h *CharacterHandler) DeleteCharacter(c *gin.Context) {
-	ownerId := c.Param("ownerId")
+	ownerID, err := util.ParseUserDataFromToken(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	characterId, err := primitive.ObjectIDFromHex(c.Param("id"))
 
 	if err != nil {
 		return
 	}
 
-	success, err := h.CharacterService.DeleteCharacter(c, ownerId, characterId)
+	success, err := h.CharacterService.DeleteCharacter(c, ownerID, characterId)
 	if success {
 		c.IndentedJSON(http.StatusOK, gin.H{})
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 }
