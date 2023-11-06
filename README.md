@@ -23,6 +23,9 @@ docker compose down && docker image prune -y && docker compose build
 
 ## Version History
 
+### Version 0.5.0
+* Added JWT Token based login capabilities and cleaned up some classes
+
 ### Version 0.4.1
 * Added first version of an Insomnia Collection with all current endpoints for quick testing.
 
@@ -49,7 +52,8 @@ docker compose down && docker image prune -y && docker compose build
 ## Future Plans 
 
 * Create integration with a remote MongoDB database;
-* Add login and token validation (Any given user can only access their characters);
 * Deploy API;
 * Add rate limiting capabilities;
-* Add uniqueness to user creation
+* Implement proper interfaces on code;
+* Expand character model capabilities (e.g. add links to images)
+* Create CI/CD flow and add secret environment variables in production environment
