@@ -7,13 +7,13 @@ import (
 )
 
 func Auth() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		_, err := util.ParseUserDataFromToken(context)
+	return func(c *gin.Context) {
+		_, err := util.ParseUserDataFromToken(c)
 		if err != nil {
-			context.JSON(401, gin.H{"error": err.Error()})
-			context.Abort()
+			c.JSON(401, gin.H{"error": err.Error()})
+			c.Abort()
 			return
 		}
-		context.Next()
+		c.Next()
 	}
 }

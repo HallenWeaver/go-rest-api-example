@@ -38,7 +38,7 @@ func (h *AuthenticationHandler) LoginUser(c *gin.Context) {
 		return
 	}
 
-	tokenString, err := generateJWT(user.ID.String())
+	tokenString, err := generateJWT(user.ID.Hex())
 	if err != nil {
 		errormsg := fmt.Sprintf("Unable to generate token for user; error: %+v", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": errormsg})

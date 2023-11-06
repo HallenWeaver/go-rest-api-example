@@ -26,7 +26,7 @@ func (cs *CharacterService) GetCharacter(ctx context.Context, ownerId string, ch
 	return cs.CharacterRepository.FindByCharacterId(ctx, ownerId, characterId)
 }
 
-func (cs *CharacterService) CreateCharacter(ctx context.Context, newCharacter model.Character) (bool, error) {
+func (cs *CharacterService) CreateCharacter(ctx context.Context, newCharacter model.Character) (*model.Character, error) {
 	return cs.CharacterRepository.CreateCharacter(ctx, newCharacter)
 }
 

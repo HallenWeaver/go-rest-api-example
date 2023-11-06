@@ -63,15 +63,15 @@ func (cr *CharacterRepository) FindByCharacterId(ctx context.Context, ownerId st
 	return character, nil
 }
 
-func (cr *CharacterRepository) CreateCharacter(ctx context.Context, newCharacter model.Character) (bool, error) {
+func (cr *CharacterRepository) CreateCharacter(ctx context.Context, newCharacter model.Character) (*model.Character, error) {
 	newCharacter.ID = primitive.NewObjectID()
 	_, err := cr.characterCollection.InsertOne(ctx, newCharacter)
 
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	return true, nil
+	return &newCharacter, nil
 }
 
 func (cr *CharacterRepository) UpdateCharacter(ctx context.Context, newCharacter model.Character) (bool, error) {

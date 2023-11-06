@@ -18,7 +18,7 @@ func ParseUserDataFromToken(c *gin.Context) (string, error) {
 		return "", err
 	}
 
-	token, err := jwt.Parse(signedToken, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(signedToken, &model.JWTTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		// Validating Algorithm
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected token signing method: %v", token.Header["alg"])
@@ -32,7 +32,7 @@ func ParseUserDataFromToken(c *gin.Context) (string, error) {
 		return "", err
 	}
 
-	claims, ok := token.Claims.(model.JWTTokenClaims)
+	claims, ok := token.Claims.(*model.JWTTokenClaims)
 	if !ok {
 		err = errors.New("unable to parse claims")
 		return "", err
@@ -41,6 +41,8 @@ func ParseUserDataFromToken(c *gin.Context) (string, error) {
 		err = errors.New("token expired")
 		return "", err
 	}
+
+	fmt.Printf("UserID: %+v\n", claims.UserID)
 
 	return claims.UserID, nil
 }

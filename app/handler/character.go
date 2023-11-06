@@ -4,7 +4,6 @@ import (
 	"alexandre/gorest/app/model"
 	"alexandre/gorest/app/service"
 	"alexandre/gorest/app/util"
-	"fmt"
 
 	"net/http"
 
@@ -61,18 +60,26 @@ func (h *CharacterHandler) GetCharacter(c *gin.Context) {
 }
 
 func (h *CharacterHandler) CreateCharacter(c *gin.Context) {
+	ownerID, err := util.ParseUserDataFromToken(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	var newCharacter model.Character
 
 	if err := c.BindJSON(&newCharacter); err != nil {
 		return
 	}
 
-	success, err := h.CharacterService.CreateCharacter(c, newCharacter)
+	newCharacter.OwnerId = ownerID
 
-	if success {
-		c.IndentedJSON(http.StatusCreated, newCharacter)
-	} else {
+	savedCharacter, err := h.CharacterService.CreateCharacter(c, newCharacter)
+
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	} else {
+		c.IndentedJSON(http.StatusCreated, savedCharacter)
 	}
 }
 
@@ -95,8 +102,6 @@ func (h *CharacterHandler) UpdateCharacter(c *gin.Context) {
 	if err != nil {
 		return
 	}
-
-	fmt.Printf("Edit Character ID: %+v\n", characterId)
 
 	editCharacter.ID = characterId
 
