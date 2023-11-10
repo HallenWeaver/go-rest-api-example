@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"alexandre/gorest/app/helper"
 	"alexandre/gorest/app/model"
 	"alexandre/gorest/app/service"
-	"alexandre/gorest/app/util"
 
 	"net/http"
 
@@ -12,17 +12,17 @@ import (
 )
 
 type CharacterHandler struct {
-	CharacterService service.CharacterService
+	CharacterService service.ICharacterService
 }
 
-func NewCharacterHandler(characterService service.CharacterService) *CharacterHandler {
+func NewCharacterHandler(characterService service.ICharacterService) *CharacterHandler {
 	return &CharacterHandler{
 		CharacterService: characterService,
 	}
 }
 
 func (h *CharacterHandler) GetCharacters(c *gin.Context) {
-	ownerID, err := util.ParseUserDataFromToken(c)
+	ownerID, err := helper.ParseUserDataFromToken(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -38,7 +38,7 @@ func (h *CharacterHandler) GetCharacters(c *gin.Context) {
 }
 
 func (h *CharacterHandler) GetCharacter(c *gin.Context) {
-	ownerID, err := util.ParseUserDataFromToken(c)
+	ownerID, err := helper.ParseUserDataFromToken(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -60,7 +60,7 @@ func (h *CharacterHandler) GetCharacter(c *gin.Context) {
 }
 
 func (h *CharacterHandler) CreateCharacter(c *gin.Context) {
-	ownerID, err := util.ParseUserDataFromToken(c)
+	ownerID, err := helper.ParseUserDataFromToken(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -90,7 +90,7 @@ func (h *CharacterHandler) UpdateCharacter(c *gin.Context) {
 		return
 	}
 
-	ownerID, err := util.ParseUserDataFromToken(c)
+	ownerID, err := helper.ParseUserDataFromToken(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -114,7 +114,7 @@ func (h *CharacterHandler) UpdateCharacter(c *gin.Context) {
 }
 
 func (h *CharacterHandler) DeleteCharacter(c *gin.Context) {
-	ownerID, err := util.ParseUserDataFromToken(c)
+	ownerID, err := helper.ParseUserDataFromToken(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

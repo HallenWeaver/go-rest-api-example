@@ -12,6 +12,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type IUserRepository interface {
+	CreateUser(ctx context.Context, newUser model.User, role model.UserRole) (*model.User, error)
+	LoginUser(ctx context.Context, loginUser model.TokenRequest) (*model.User, error)
+}
+
 type UserRepository struct {
 	userCollection *mongo.Collection
 }

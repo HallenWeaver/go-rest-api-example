@@ -1,4 +1,4 @@
-package util
+package helper
 
 import (
 	"alexandre/gorest/app/model"
