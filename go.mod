@@ -30,6 +30,8 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
+	golang.org/x/tools v0.6.0 // indirect
+	golang.org/x/tools/cmd/cover v0.1.0-deprecated // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

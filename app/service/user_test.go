@@ -1,6 +1,7 @@
 package service
 
 import (
+	"alexandre/gorest/app/helper"
 	"alexandre/gorest/app/model"
 	"alexandre/gorest/app/repository"
 	"context"
@@ -25,11 +26,11 @@ func (mur *MockUserRepository) LoginUser(ctx context.Context, loginUser model.To
 }
 
 func (murwe *MockUserRepositoryWithErrors) CreateUser(ctx context.Context, newUser model.User, role model.UserRole) (*model.User, error) {
-	return nil, ErrorMessageTesting
+	return nil, helper.ErrorMessageTesting
 }
 
 func (murwe *MockUserRepositoryWithErrors) LoginUser(ctx context.Context, loginUser model.TokenRequest) (*model.User, error) {
-	return nil, ErrorMessageTesting
+	return nil, helper.ErrorMessageTesting
 }
 
 type MockUserRepositoryWrapper struct {
@@ -48,10 +49,9 @@ func TestUserService(t *testing.T) {
 		userService := NewUserService(userRepo.userRepo)
 
 		createdUser, err := userService.CreateUser(context.Background(), model.User{}, model.Standard)
-		AssertValidityCondition(t, createdUser, err, userRepo.isValidTesting)
+		helper.AssertValidityCondition(t, createdUser, err, userRepo.isValidTesting)
 
 		loginUser, err := userService.LoginUser(context.Background(), model.TokenRequest{})
-		AssertValidityCondition(t, loginUser, err, userRepo.isValidTesting)
-
+		helper.AssertValidityCondition(t, loginUser, err, userRepo.isValidTesting)
 	}
 }

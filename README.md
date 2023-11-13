@@ -23,6 +23,10 @@ docker compose down && docker image prune -y && docker compose build
 
 ## Version History
 
+### Version 0.6.0
+* Added proper interfacing to ensure decoupling
+* Added unit testing!
+
 ### Version 0.5.0
 * Added JWT Token based login capabilities and cleaned up some classes
 
@@ -36,24 +40,24 @@ docker compose down && docker image prune -y && docker compose build
 * Added a mongo-express endpoint to visualize the database, eliminating the need for solutions such as Compass if one desires so.
 
 ### Version 0.3.0
-* Implemented a simple version of the Controller/Service/Repository pattern, in order to comply with _Separation of Concerns_;
+* Implemented a simple version of the Controller/Service/Repository pattern, in order to comply with _Separation of Concerns_.
 
 ### Version 0.2.0
-* Switched in-memory array for temporary SQLite solution;
+* Switched in-memory array for temporary SQLite solution.
 
 ### Version 0.1.1
-* Added POST, PUT and DELETE verbs to character creation API;
-* Updated character model to reflect future addition of login verification;
+* Added POST, PUT and DELETE verbs to character creation API.
+* Updated character model to reflect future addition of login verification.
 
 ### Version 0.1.0
-* First version of the API;
-* Requests work with an in-memory array serving as the database;
+* First version of the API.
+* Requests work with an in-memory array serving as the database.
 
 ## Future Plans 
 
 * Create integration with a remote MongoDB database;
 * Deploy API;
 * Add rate limiting capabilities;
-* Implement proper interfaces on code;
 * Expand character model capabilities (e.g. add links to images)
 * Create CI/CD flow and add secret environment variables in production environment
+* Fully flesh out admin role

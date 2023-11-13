@@ -1,6 +1,7 @@
 package service
 
 import (
+	"alexandre/gorest/app/helper"
 	"alexandre/gorest/app/model"
 	"alexandre/gorest/app/repository"
 
@@ -36,23 +37,23 @@ func (mcr *MockCharacterRepository) DeleteCharacter(ctx context.Context, ownerId
 }
 
 func (mcrwe *MockCharacterRepositoryWithErrors) FindAllByUser(ctx context.Context, ownerID string, count int64) ([]*model.Character, error) {
-	return nil, ErrorMessageTesting
+	return nil, helper.ErrorMessageTesting
 }
 
 func (mcrwe *MockCharacterRepositoryWithErrors) FindByCharacterId(ctx context.Context, ownerId string, characterId primitive.ObjectID) (*model.Character, error) {
-	return nil, ErrorMessageTesting
+	return nil, helper.ErrorMessageTesting
 }
 
 func (mcrwe *MockCharacterRepositoryWithErrors) CreateCharacter(ctx context.Context, newCharacter model.Character) (*model.Character, error) {
-	return nil, ErrorMessageTesting
+	return nil, helper.ErrorMessageTesting
 }
 
 func (mcrwe *MockCharacterRepositoryWithErrors) UpdateCharacter(ctx context.Context, newCharacter model.Character) (bool, error) {
-	return false, ErrorMessageTesting
+	return false, helper.ErrorMessageTesting
 }
 
 func (mcrwe *MockCharacterRepositoryWithErrors) DeleteCharacter(ctx context.Context, ownerId string, characterId primitive.ObjectID) (bool, error) {
-	return false, ErrorMessageTesting
+	return false, helper.ErrorMessageTesting
 }
 
 type MockCharacterRepositoryWrapper struct {
@@ -71,18 +72,18 @@ func TestCharacterService(t *testing.T) {
 		characterService := NewCharacterService(characterRepo.characterRepo)
 
 		returnedCharacterList, err := characterService.GetCharacters(context.Background(), "", 0)
-		AssertValidityCondition(t, returnedCharacterList, err, characterRepo.isValidTesting)
+		helper.AssertValidityCondition(t, returnedCharacterList, err, characterRepo.isValidTesting)
 
 		returnedCharacter, err := characterService.GetCharacter(context.Background(), "", primitive.NewObjectID())
-		AssertValidityCondition(t, returnedCharacter, err, characterRepo.isValidTesting)
+		helper.AssertValidityCondition(t, returnedCharacter, err, characterRepo.isValidTesting)
 
 		createdCharacter, err := characterService.CreateCharacter(context.Background(), model.Character{})
-		AssertValidityCondition(t, createdCharacter, err, characterRepo.isValidTesting)
+		helper.AssertValidityCondition(t, createdCharacter, err, characterRepo.isValidTesting)
 
 		updatedCharacter, err := characterService.UpdateCharacter(context.Background(), model.Character{})
-		AssertValidityConditionBoolean(t, updatedCharacter, err, characterRepo.isValidTesting)
+		helper.AssertValidityConditionBoolean(t, updatedCharacter, err, characterRepo.isValidTesting)
 
 		deletedCharacter, err := characterService.DeleteCharacter(context.Background(), "", primitive.NewObjectID())
-		AssertValidityConditionBoolean(t, deletedCharacter, err, characterRepo.isValidTesting)
+		helper.AssertValidityConditionBoolean(t, deletedCharacter, err, characterRepo.isValidTesting)
 	}
 }

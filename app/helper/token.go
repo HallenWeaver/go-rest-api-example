@@ -12,6 +12,22 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+func GenerateJWT(userID string) (tokenString string, err error) {
+	jwtKey := []byte(os.Getenv("JWT_TOKEN"))
+	claims := model.JWTTokenClaims{
+		UserID: userID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			// A usual scenario is to set the expiration time relative to the current time
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+			Issuer:    "go-rest-api-example",
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(jwtKey)
+}
+
 func ParseUserDataFromToken(c *gin.Context) (string, error) {
 	signedToken, err := extractBearerToken(c.GetHeader("Authorization"))
 	if err != nil {
