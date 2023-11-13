@@ -8,11 +8,19 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type CharacterService struct {
-	CharacterRepository repository.CharacterRepository
+type ICharacterService interface {
+	GetCharacters(ctx context.Context, ownerId string, limit int64) ([]*model.Character, error)
+	GetCharacter(ctx context.Context, ownerId string, characterId primitive.ObjectID) (*model.Character, error)
+	CreateCharacter(ctx context.Context, newCharacter model.Character) (*model.Character, error)
+	UpdateCharacter(ctx context.Context, newCharacter model.Character) (bool, error)
+	DeleteCharacter(ctx context.Context, ownerId string, characterId primitive.ObjectID) (bool, error)
 }
 
-func NewCharacterService(characterRepository repository.CharacterRepository) *CharacterService {
+type CharacterService struct {
+	CharacterRepository repository.ICharacterRepository
+}
+
+func NewCharacterService(characterRepository repository.ICharacterRepository) *CharacterService {
 	return &CharacterService{
 		CharacterRepository: characterRepository,
 	}

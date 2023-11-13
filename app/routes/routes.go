@@ -12,16 +12,16 @@ import (
 
 func InitializeRoutes(router *gin.Engine, mongoClient *mongo.Client) {
 	characterRepository := repository.NewCharacterRepository(mongoClient)
-	characterService := service.NewCharacterService(*characterRepository)
-	characterHandler := handler.NewCharacterHandler(*characterService)
+	characterService := service.NewCharacterService(characterRepository)
+	characterHandler := handler.NewCharacterHandler(characterService)
 	initializeCharacterRoutes(router, characterHandler)
 
 	userRepository := repository.NewUserRepository(mongoClient)
-	userService := service.NewUserService(*userRepository)
-	userHandler := handler.NewUserHandler(*userService)
+	userService := service.NewUserService(userRepository)
+	userHandler := handler.NewUserHandler(userService)
 	initializeUserRoutes(router, userHandler)
 
-	authenticationHandler := handler.NewAuthenticationHandler(*userService)
+	authenticationHandler := handler.NewAuthenticationHandler(userService)
 	initializeAuthenticationRoutes(router, authenticationHandler)
 
 	healthHandler := handler.NewHealthHandler()
@@ -30,7 +30,7 @@ func InitializeRoutes(router *gin.Engine, mongoClient *mongo.Client) {
 
 func initializeCharacterRoutes(router *gin.Engine, characterHandler *handler.CharacterHandler) {
 	characterV1 := router.Group("/character").Use(middleware.Auth())
-	characterV1.GET("/", characterHandler.GetCharacters)
+	characterV1.GET("", characterHandler.GetCharacters)
 	characterV1.GET("/:id", characterHandler.GetCharacter)
 	characterV1.POST("", characterHandler.CreateCharacter)
 	characterV1.PUT("/:id", characterHandler.UpdateCharacter)

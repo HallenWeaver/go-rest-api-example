@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"alexandre/gorest/app/helper"
 	"alexandre/gorest/app/model"
 	"alexandre/gorest/app/service"
-	"alexandre/gorest/app/util"
 
 	"net/http"
 
@@ -12,19 +12,19 @@ import (
 )
 
 type CharacterHandler struct {
-	CharacterService service.CharacterService
+	CharacterService service.ICharacterService
 }
 
-func NewCharacterHandler(characterService service.CharacterService) *CharacterHandler {
+func NewCharacterHandler(characterService service.ICharacterService) *CharacterHandler {
 	return &CharacterHandler{
 		CharacterService: characterService,
 	}
 }
 
 func (h *CharacterHandler) GetCharacters(c *gin.Context) {
-	ownerID, err := util.ParseUserDataFromToken(c)
+	ownerID, err := helper.ParseUserDataFromToken(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -38,9 +38,9 @@ func (h *CharacterHandler) GetCharacters(c *gin.Context) {
 }
 
 func (h *CharacterHandler) GetCharacter(c *gin.Context) {
-	ownerID, err := util.ParseUserDataFromToken(c)
+	ownerID, err := helper.ParseUserDataFromToken(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -60,15 +60,16 @@ func (h *CharacterHandler) GetCharacter(c *gin.Context) {
 }
 
 func (h *CharacterHandler) CreateCharacter(c *gin.Context) {
-	ownerID, err := util.ParseUserDataFromToken(c)
+	ownerID, err := helper.ParseUserDataFromToken(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
 	var newCharacter model.Character
 
 	if err := c.BindJSON(&newCharacter); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -90,9 +91,9 @@ func (h *CharacterHandler) UpdateCharacter(c *gin.Context) {
 		return
 	}
 
-	ownerID, err := util.ParseUserDataFromToken(c)
+	ownerID, err := helper.ParseUserDataFromToken(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 	editCharacter.OwnerId = ownerID
@@ -100,6 +101,7 @@ func (h *CharacterHandler) UpdateCharacter(c *gin.Context) {
 	characterId, err := primitive.ObjectIDFromHex(c.Param("id"))
 
 	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -107,27 +109,28 @@ func (h *CharacterHandler) UpdateCharacter(c *gin.Context) {
 
 	success, err := h.CharacterService.UpdateCharacter(c, editCharacter)
 	if success {
-		c.IndentedJSON(http.StatusCreated, editCharacter)
+		c.IndentedJSON(http.StatusOK, editCharacter)
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 }
 
 func (h *CharacterHandler) DeleteCharacter(c *gin.Context) {
-	ownerID, err := util.ParseUserDataFromToken(c)
+	ownerID, err := helper.ParseUserDataFromToken(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 	characterId, err := primitive.ObjectIDFromHex(c.Param("id"))
 
 	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	success, err := h.CharacterService.DeleteCharacter(c, ownerID, characterId)
 	if success {
-		c.IndentedJSON(http.StatusOK, gin.H{})
+		c.JSON(http.StatusNoContent, gin.H{})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}

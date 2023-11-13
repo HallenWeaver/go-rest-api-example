@@ -6,11 +6,16 @@ import (
 	"context"
 )
 
-type UserService struct {
-	UserRepository repository.UserRepository
+type IUserService interface {
+	CreateUser(ctx context.Context, newUser model.User, role model.UserRole) (*model.User, error)
+	LoginUser(ctx context.Context, loginUser model.TokenRequest) (*model.User, error)
 }
 
-func NewUserService(userRepository repository.UserRepository) *UserService {
+type UserService struct {
+	UserRepository repository.IUserRepository
+}
+
+func NewUserService(userRepository repository.IUserRepository) *UserService {
 	return &UserService{
 		UserRepository: userRepository,
 	}

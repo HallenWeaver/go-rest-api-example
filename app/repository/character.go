@@ -12,6 +12,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type ICharacterRepository interface {
+	FindAllByUser(ctx context.Context, ownerID string, count int64) ([]*model.Character, error)
+	FindByCharacterId(ctx context.Context, ownerId string, characterId primitive.ObjectID) (*model.Character, error)
+	CreateCharacter(ctx context.Context, newCharacter model.Character) (*model.Character, error)
+	UpdateCharacter(ctx context.Context, newCharacter model.Character) (bool, error)
+	DeleteCharacter(ctx context.Context, ownerId string, characterId primitive.ObjectID) (bool, error)
+}
+
 type CharacterRepository struct {
 	characterCollection *mongo.Collection
 }
